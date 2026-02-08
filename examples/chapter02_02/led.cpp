@@ -8,7 +8,7 @@
 // The LED program.
 
 #include "mcal_reg.h"
-// #define F_CPU 16000000UL
+#define F_CPU 16000000UL
 #include <util/delay.h>
 
 #include <cstdint>
@@ -75,19 +75,35 @@ static inline void gpio_toggle(uint8_t port, uint8_t bit_index)
   *((volatile uint8_t*) port) ^= (1U << bit_index);
 }
 
+static inline void gpio_high(uint8_t port, uint8_t bit_index)
+{
+  *((volatile uint8_t*) port) |= (1U << bit_index);
+}
+
+static inline void gpio_low(uint8_t port, uint8_t bit_index)
+{
+  *((volatile uint8_t*) port) &= ~(1U << bit_index);
+}
+
 auto main() -> int;
 
 auto main() -> int
 {
-  // Toggle led_b5 in a loop forever.
+  gpio_high(mcal::reg::portd, 5U);
+  _delay_ms(1000);
+
+  gpio_high(mcal::reg::portd, 3U);
+  _delay_ms(1000);
+
+  gpio_low(mcal::reg::portd, 3U);
+  _delay_ms(1000);
+
+  gpio_low(mcal::reg::portd, 5U);
+  _delay_ms(1000);
   for (;;)
   {
     gpio_toggle(mcal::reg::portd, 5U);
     gpio_toggle(mcal::reg::portd, 3U);
-
-    // Some boards have a slower LED electrical
-    // response on the port. Optionally activate
-    // delay loop if LED toggle is not visible.
-    _delay_ms(5000);
+    _delay_ms(1000);
   }
 }
