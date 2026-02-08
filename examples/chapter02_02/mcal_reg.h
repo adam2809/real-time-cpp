@@ -12,6 +12,7 @@
 
   namespace mcal::reg {
 
+  constexpr std::uint8_t portd { UINT8_C(0x2BU) };
   constexpr std::uint8_t portb { UINT8_C(0x25U) };
 
   constexpr std::uint8_t bval0 { UINT8_C(0x01) };

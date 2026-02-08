@@ -8,6 +8,8 @@
 // The LED program.
 
 #include "mcal_reg.h"
+// #define F_CPU 16000000UL
+#include <util/delay.h>
 
 #include <cstdint>
 
@@ -56,6 +58,21 @@ namespace
     mcal::reg::portb,
     mcal::reg::bval5
   };
+  led led_red
+  {
+    mcal::reg::portd,
+    mcal::reg::bval3
+  };
+  led led_blue
+  {
+    mcal::reg::portd,
+    mcal::reg::bval5
+  };
+}
+
+static inline void gpio_toggle(uint8_t port, uint8_t bit_index)
+{
+  *((volatile uint8_t*) port) ^= (1U << bit_index);
 }
 
 auto main() -> int;
@@ -65,11 +82,12 @@ auto main() -> int
   // Toggle led_b5 in a loop forever.
   for (;;)
   {
-    led_b5.toggle();
+    gpio_toggle(mcal::reg::portd, 5U);
+    gpio_toggle(mcal::reg::portd, 3U);
 
     // Some boards have a slower LED electrical
     // response on the port. Optionally activate
     // delay loop if LED toggle is not visible.
-    //for(volatile std::uint8_t delay = UINT8_C(0); delay < UINT8_C(10); ++delay) { ; }
+    _delay_ms(5000);
   }
 }
