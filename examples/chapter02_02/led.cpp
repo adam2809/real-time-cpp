@@ -49,8 +49,11 @@ auto main() -> int
 
   set_bit_at_address(&DDRD, 5U);
   set_bit_at_address(&DDRD, 3U);
+
   clear_bit_at_address(&DDRB, 1U);
   set_bit_at_address(&PORTB, 1U);
+
+  _delay_ms(5U);
   for (;;)
   {
     if(!check_bit_at_address(&PINB, 1U))
