@@ -50,14 +50,22 @@ auto main() -> int
   set_bit_at_address(&DDRD, 5U);
   set_bit_at_address(&DDRD, 3U);
   clear_bit_at_address(&DDRB, 1U);
+  set_bit_at_address(&PORTB, 1U);
   for (;;)
   {
-    set_bit_at_address(&PORTD, 5U);
-    clear_bit_at_address(&PORTD, 3U);
-    _delay_ms(500U);
-    clear_bit_at_address(&PORTD, 5U);
-    set_bit_at_address(&PORTD, 3U);
-    _delay_ms(500U);
+    if(!check_bit_at_address(&PINB, 1U))
+    {
+      set_bit_at_address(&PORTD, 5U);
+      clear_bit_at_address(&PORTD, 3U);
+      _delay_ms(500U);
+      clear_bit_at_address(&PORTD, 5U);
+      set_bit_at_address(&PORTD, 3U);
+      _delay_ms(500U);
+    }
+    else
+    {
+      clear_bit_at_address(&PORTD, 5U);
+      clear_bit_at_address(&PORTD, 3U);
+    }
   }
-  
 }
