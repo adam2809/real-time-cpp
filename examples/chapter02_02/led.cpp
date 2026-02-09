@@ -45,32 +45,29 @@ static inline void gpio_low(port_address port, uint8_t bit_index)
   *((volatile uint8_t*) port) &= ~(1U << bit_index);
 }
 
+static inline bool gpio_read(port_address port, uint8_t bit_index)
+{
+  return (*((volatile uint8_t*) port) >> bit_index & 1U);
+}
+
 auto main() -> int;
 
 auto main() -> int
 {
   gpio_set_dir(ePortD, 5U, eOutput);
   gpio_set_dir(ePortD, 3U, eOutput);
-  gpio_set_dir(ePortB, 5U, eOutput);
+  gpio_set_dir(ePortB, 1U, eInput);
 
-  gpio_high(ePortD, 5U);
-  _delay_ms(1000);
+  if(gpio_read(ePortB, 1U))
+  {
+    gpio_high(ePortD, 5U);
+    gpio_low(ePortD, 3U);
+  }
+  else
+  {
+    gpio_low(ePortD, 5U);
+    gpio_high(ePortD, 3U);
+  }
 
-  gpio_high(ePortD, 3U);
-  _delay_ms(1000);
 
-  gpio_low(ePortD, 3U);
-  _delay_ms(1000);
-
-  gpio_low(ePortD, 5U);
-  _delay_ms(1000);
-
-  gpio_toggle(ePortD, 5U);
-  gpio_toggle(ePortD, 3U);
-  gpio_toggle(ePortB, 5U);
-  _delay_ms(1000);
-
-  gpio_toggle(ePortD, 5U);
-  gpio_toggle(ePortD, 3U);
-  gpio_toggle(ePortB, 5U);
 }
