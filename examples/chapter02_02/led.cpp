@@ -7,12 +7,9 @@
 
 // The LED program.
 
-#include "mcal_reg.h"
 #define F_CPU 16000000UL
 #include <util/delay.h>
 #include <avr/io.h>
-
-#include <cstdint>
 
 enum address_direction
 {
