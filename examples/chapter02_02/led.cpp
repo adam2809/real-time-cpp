@@ -10,6 +10,7 @@
 #include "mcal_reg.h"
 #define F_CPU 16000000UL
 #include <util/delay.h>
+#include <avr/io.h>
 
 #include <cstdint>
 
@@ -19,55 +20,47 @@ enum port_direction
   eOutput = 1U
 };
 
-enum port_address
+static inline void gpio_set_dir(volatile uint8_t* port, uint8_t bit_index, port_direction dir)
 {
-  ePortB = 0x25U,
-  ePortD = 0x2BU
-};
-
-static inline void gpio_set_dir(port_address port, uint8_t bit_index, port_direction dir)
-{
-  *((volatile uint8_t*) port - 1U) |= (dir << bit_index);
+  *(port - 1U) |= (dir << bit_index);
 }
 
-static inline void gpio_toggle(port_address port, uint8_t bit_index)
+static inline void gpio_toggle(volatile uint8_t* port, uint8_t bit_index)
 {
-  *((volatile uint8_t*) port) ^= (1U << bit_index);
+  *(port) ^= (1U << bit_index);
 }
 
-static inline void gpio_high(port_address port, uint8_t bit_index)
+static inline void gpio_high(volatile uint8_t* port, uint8_t bit_index)
 {
-  *((volatile uint8_t*) port) |= (1U << bit_index);
+  *(port) |= (1U << bit_index);
 }
 
-static inline void gpio_low(port_address port, uint8_t bit_index)
+static inline void gpio_low(volatile uint8_t* port, uint8_t bit_index)
 {
-  *((volatile uint8_t*) port) &= ~(1U << bit_index);
+  *(port) &= ~(1U << bit_index);
 }
 
-static inline bool gpio_read(port_address port, uint8_t bit_index)
+static inline bool gpio_read(volatile uint8_t* port, uint8_t bit_index)
 {
-  return (*((volatile uint8_t*) port) >> bit_index & 1U);
+  return (*(port) >> bit_index & 1U);
 }
 
 auto main() -> int;
 
 auto main() -> int
 {
-  gpio_set_dir(ePortD, 5U, eOutput);
-  gpio_set_dir(ePortD, 3U, eOutput);
-  gpio_set_dir(ePortB, 1U, eInput);
 
-  if(gpio_read(ePortB, 1U))
+  gpio_set_dir(&PORTD, 5U, eOutput);
+  gpio_set_dir(&PORTD, 3U, eOutput);
+  gpio_set_dir(&PORTB, 1U, eInput);
+  for (;;)
   {
-    gpio_high(ePortD, 5U);
-    gpio_low(ePortD, 3U);
+    gpio_high(&PORTD, 5U);
+    gpio_low(&PORTD, 3U);
+    _delay_ms(500U);
+    gpio_low(&PORTD, 5U);
+    gpio_high(&PORTD, 3U);
+    _delay_ms(500U);
   }
-  else
-  {
-    gpio_low(ePortD, 5U);
-    gpio_high(ePortD, 3U);
-  }
-
-
+  
 }
