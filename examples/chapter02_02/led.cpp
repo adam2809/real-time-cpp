@@ -20,9 +20,9 @@ enum port_direction
   eOutput = 1U
 };
 
-static inline void gpio_set_dir(volatile uint8_t* port, uint8_t bit_index, port_direction dir)
+static inline void gpio_set_dir(volatile uint8_t* dir_port, uint8_t bit_index, port_direction dir)
 {
-  *(port - 1U) |= (dir << bit_index);
+  *(dir_port) |= (dir << bit_index);
 }
 
 static inline void gpio_toggle(volatile uint8_t* port, uint8_t bit_index)
@@ -50,9 +50,9 @@ auto main() -> int;
 auto main() -> int
 {
 
-  gpio_set_dir(&PORTD, 5U, eOutput);
-  gpio_set_dir(&PORTD, 3U, eOutput);
-  gpio_set_dir(&PORTB, 1U, eInput);
+  gpio_set_dir(&DDRD, 5U, eOutput);
+  gpio_set_dir(&DDRD, 3U, eOutput);
+  gpio_set_dir(&DDRB, 1U, eInput);
   for (;;)
   {
     gpio_high(&PORTD, 5U);
