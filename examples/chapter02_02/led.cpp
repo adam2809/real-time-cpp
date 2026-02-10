@@ -65,7 +65,19 @@ static inline bool check_bit_at_address(volatile uint8_t* address, uint8_t bit_i
 int main(void)
 {
   usart_init(MY_UBRR);
-  uint8_t data[] = {0x41, 0x42, 0x43, 0x44};
+  // uint8_t data[] = {
+  //   0x01, // device ID 1
+  //   0x05, // function code 5 (write single coil)
+  //   0x00, // address 0
+  //   0x01, // value 1
+  //   0x19,0xD0 // CRC16 checksum
+  // };
+  uint8_t data_pressed[] = {
+    0x01U, 0x05U, 0x00U, 0x00U, 0x01U, 0xD8U ,0xCCU
+  };
+  uint8_t data_released[] = {
+    0x01U, 0x05U, 0x00U, 0x00U, 0x00U, 0x19U, 0x0CU
+  };
 
   set_bit_at_address(&DDRD, 5U);
   set_bit_at_address(&DDRD, 3U);
@@ -79,8 +91,8 @@ int main(void)
     _delay_ms(3000U);
     set_bit_at_address(&PORTD, 5U);
     set_bit_at_address(&PORTD, 3U);
-    for (int i = 0; i < 4; i++) {
-      usart_transmit(data[i]);
+    for (int i = 0; i < 8; i++) {
+      usart_transmit(data_released[i]);
     }
     clear_bit_at_address(&PORTD, 5U);
     clear_bit_at_address(&PORTD, 3U);
