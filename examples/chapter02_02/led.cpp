@@ -16,39 +16,30 @@
 
 void usart_init(unsigned int ubrr) {
   // Set baud rate.
-  UBRRH = (uint8_t)(ubrr >> 8);
-  UBRRL = (uint8_t)(ubrr);
-  // UBRRH = USART Baud Rate Register High.
-  // UBRRL = USART Baud Rate Register Low.
+  UBRR0H = (uint8_t)(ubrr >> 8);
+  UBRR0L = (uint8_t)(ubrr);
+  // UBRR0H = USART Baud Rate Register High.
+  // UBRR0L = USART Baud Rate Register Low.
 
   // Enable receiver and transmitter.
-  UCSRB = (1 << RXEN) | (1 << TXEN);
-  // UCSRB = USART Control and Status Register B.
-  // RXEN = Receiver Enabled.
-  // TXEN = Transmitter Enabled.
+  UCSR0B = (1 << RXEN0) | (1 << TXEN0);
+  // UCSR0B = USART Control and Status Register B.
+  // RXEN0 = Receiver Enabled.
+  // TXEN0 = Transmitter Enabled.
 
   // Double the USART transmission speed.
-  UCSRA = (1 << U2X);
+  UCSR0A = (1 << U2X0);
 
   // Set frame format: 1 stop bit, 8 data bits.
-  UCSRC = (1 << URSEL) | (1 << UCSZ1) | (1 << UCSZ0);
-  // UCSRC = (1 << URSEL) | (1 << USBS) | (1 << UCSZ0) | (1 << UCSZ1);
-  // UCSRC = USART Control and Status Register C.
-  // URSEL = USART Register Select.
-  // USBS = USART Stop Bit Select (0 -> 1b, 1 -> 2b).
-  // USZ0 = USART Character Size.
+  UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+  // UCSR0C = USART Control and Status Register C.
+  // UCSZ01, UCSZ00 = USART Character Size (8 bits).
 }
 
 void usart_transmit(uint8_t data) {
-  // Wait for empty transmit buffer.
-  while (!(UCSRA & (1 << UDRE))) {
+  while (!(UCSR0A & (1 << UDRE0))) {
   };
-  // UCSRA = USART Control and Status Register A.
-  // UDRE = USART Data Register Empty.
-
-  // TODO: What about buffer overflow etc?
-  UDR = data;
-  // UDR = USART Data Register.
+  UDR0 = data;
 }
 
 static inline void set_bit_at_address(volatile uint8_t* address, uint8_t bit_index)
@@ -90,7 +81,6 @@ int main(void)
     set_bit_at_address(&PORTD, 3U);
     for (int i = 0; i < 4; i++) {
       usart_transmit(data[i]);
-      _delay_ms(500U);
     }
     clear_bit_at_address(&PORTD, 5U);
     clear_bit_at_address(&PORTD, 3U);
