@@ -73,10 +73,10 @@ int main(void)
   //   0x19,0xD0 // CRC16 checksum
   // };
   uint8_t data_pressed[] = {
-    0x00U, 0x01U, 0x05U, 0x00U, 0x00U, 0x01U, 0xD8U ,0xCCU, 0x00U
+    0x01U, 0x05U, 0x00U, 0x00U, 0xFFU, 0x00U, 0x8CU, 0x3AU
   };
   uint8_t data_released[] = {
-    0x00U, 0x01U, 0x05U, 0x00U, 0x00U, 0x00U, 0x19U, 0x0CU, 0x00U
+    0x01U, 0x05U, 0x00U, 0x00U, 0x00U, 0xFFU, 0x8DU, 0x8AU
   };
 
   set_bit_at_address(&DDRD, 5U);
@@ -88,10 +88,10 @@ int main(void)
   _delay_ms(5U);
   for (;;)
   {
-    _delay_ms(3000U);
+    _delay_ms(1000U);
     set_bit_at_address(&PORTD, 5U);
     set_bit_at_address(&PORTD, 3U);
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 8; i++) {
       usart_transmit(data_released[i]);
     }
     clear_bit_at_address(&PORTD, 5U);
