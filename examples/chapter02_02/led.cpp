@@ -42,6 +42,13 @@ void usart_transmit(uint8_t data) {
   UDR0 = data;
 }
 
+uint8_t usart_receive(void) {
+  while (!(UCSR0A & (1 << RXC0))) {
+  };
+
+  return UDR0;
+}
+
 static inline void set_bit_at_address(volatile uint8_t* address, uint8_t bit_index)
 {
   *(address) |= (1U << bit_index);
@@ -75,8 +82,17 @@ int main(void)
   uint8_t data_pressed[] = {
     0x01U, 0x05U, 0x00U, 0x00U, 0xFFU, 0x00U, 0x8CU, 0x3AU
   };
+
+  uint8_t data_pressed_expected_response[] = {
+    0x1U, 0x5U, 0x0U, 0x0U, 0xffU, 0x0U, 0x8cU, 0x3aU
+  };
+
   uint8_t data_released[] = {
     0x01U, 0x03U, 0x40U, 0x00U, 0x00U, 0x01U, 0x91U, 0xCAU
+  };
+
+  uint8_t data_released_expected_response[] = {
+    0x1U, 0x83U, 0x2U, 0xc0U, 0xf1U
   };
 
   set_bit_at_address(&DDRD, 5U);
@@ -88,14 +104,38 @@ int main(void)
   _delay_ms(5U);
   for (;;)
   {
-    _delay_ms(1000U);
     set_bit_at_address(&PORTD, 5U);
     set_bit_at_address(&PORTD, 3U);
     for (int i = 0; i < 8; i++) {
-      usart_transmit(data_released[i]);
+      usart_transmit(data_pressed[i]);
     }
     clear_bit_at_address(&PORTD, 5U);
     clear_bit_at_address(&PORTD, 3U);
+
+    for (int i = 0; i < 8; i++) {
+      if(usart_receive() != data_pressed_expected_response[i])
+      {
+        set_bit_at_address(&PORTD, 3U);
+      }
+    }
+    set_bit_at_address(&PORTD, 5U);
+
+    _delay_ms(3000U);
+    clear_bit_at_address(&PORTD, 5U);
+    clear_bit_at_address(&PORTD, 3U);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     if(!check_bit_at_address(&PINB, 1U))
     {
